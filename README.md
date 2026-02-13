@@ -11,9 +11,11 @@
 ## 🎯 Project Status
 
 **Current Version**: 1.0.0  
-**Status**: Production Ready  
+**Status**: Beta - Needs Testing ⚠️  
 **Total Lines of Code**: ~16,400+  
 **Last Updated**: February 2026
+
+> **⚠️ Testing Status**: This project requires comprehensive testing before production use. Test suites need to be completed and all features should be thoroughly validated in a development environment.
 
 Built with ❤️ for the bug bounty community
 
@@ -274,10 +276,23 @@ auto_bug_web/
   - Real-time WebSocket updates
   - Export functionality (CSV/JSON)
 
+- [ ] **Phase 8: Comprehensive Testing** 🚧 **IN PROGRESS - HELP NEEDED**
+  - Unit tests for all modules
+  - Integration tests for workflows
+  - API endpoint testing
+  - Database transaction tests
+  - Scanner integration tests
+  - Security and penetration testing
+  - Performance and load testing
+  - Documentation validation
+
 ## 🤝 Contributing
 
 We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
+**🚨 Testing Help Needed**: We're actively looking for contributors to help build comprehensive test suites. This is a great way to contribute!
+
+- **Help with testing** - Write unit/integration tests (Priority!)
 - Report bugs by opening an issue
 - Suggest features via issues
 - Submit PRs for bug fixes or features
