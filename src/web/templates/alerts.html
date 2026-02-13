@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block page_actions %}
+<div class="page-actions">
+    <button class="btn btn-warning" hx-post="/api/alerts/retry-failed" hx-swap="none">
+        Retry Failed ({{ failed_count }})
+    </button>
+    <button class="btn btn-primary" hx-get="/api/alerts" hx-target="#alerts-table" hx-swap="innerHTML">
+        Refresh
+    </button>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Alert Statistics -->
+<div class="stats-grid small">
+    <div class="stat-card">
+        <h3>{{ total_alerts }}</h3>
+        <p>Total Alerts</p>
+    </div>
+    <div class="stat-card success">
+        <h3>{{ sent_count }}</h3>
+        <p>Sent Successfully</p>
+    </div>
+    <div class="stat-card danger">
+        <h3>{{ failed_count }}</h3>
+        <p>Failed</p>
+    </div>
+    <div class="stat-card info">
+        <h3>{{ success_rate|round(1) }}%</h3>
+        <p>Success Rate</p>
+    </div>
+</div>
+
+<!-- Alerts Table -->
+<div class="card">
+    <div id="alerts-table">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Alert Type</th>
+                    <th>Channel</th>
+                    <th>Title</th>
+                    <th>Status</th>
+                    <th>Sent At</th>
+                    <th>Error</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for alert in alerts %}
+                <tr>
+                    <td><span class="badge badge-{{ alert.alert_type }}">{{ alert.alert_type }}</span></td>
+                    <td>
+                        {% if alert.channel == 'discord' %}
+                        <span class="badge badge-discord">Discord</span>
+                        {% elif alert.channel == 'slack' %}
+                        <span class="badge badge-slack">Slack</span>
+                        {% else %}
+                        <span class="badge">{{ alert.channel }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <strong>{{ alert.title }}</strong>
+                        {% if alert.message %}
+                        <br><small class="text-muted">{{ alert.message[:100] }}...</small>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if alert.sent_successfully %}
+                        <span class="status-badge success">Sent</span>
+                        {% else %}
+                        <span class="status-badge error">Failed</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ alert.sent_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td>
+                        {% if alert.error_message %}
+                        <small class="text-error">{{ alert.error_message }}</small>
+                        {% else %}
+                        <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        {% if not alerts %}
+        <div class="empty-state">
+            <p>No alerts sent yet. Alerts will appear here when sent!</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

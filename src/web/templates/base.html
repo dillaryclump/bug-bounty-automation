@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AutoBug{% endblock %} - Automated Bug Bounty Platform</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/static/css/main.css">
+    
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    
+    <!-- Chart.js for graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>🐛 AutoBug</h1>
+                <span class="nav-subtitle">Automated Bug Bounty Platform</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/dashboard" class="{% if page_title == 'Dashboard' %}active{% endif %}">Dashboard</a></li>
+                <li><a href="/programs" class="{% if page_title == 'Programs' %}active{% endif %}">Programs</a></li>
+                <li><a href="/assets" class="{% if page_title == 'Assets' %}active{% endif %}">Assets</a></li>
+                <li><a href="/vulnerabilities" class="{% if page_title == 'Vulnerabilities' %}active{% endif %}">Vulnerabilities</a></li>
+                <li><a href="/scans" class="{% if page_title == 'Scans' %}active{% endif %}">Scans</a></li>
+                <li><a href="/alerts" class="{% if page_title == 'Alerts' %}active{% endif %}">Alerts</a></li>
+                <li><a href="/api/docs" target="_blank">API Docs</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="container">
+        <div class="page-header">
+            <h2>{% block page_header %}{{ page_title }}{% endblock %}</h2>
+            {% block page_actions %}{% endblock %}
+        </div>
+        
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 AutoBug | Phase 6: Web Dashboard</p>
+        </div>
+    </footer>
+    
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

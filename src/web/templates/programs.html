@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block page_actions %}
+<div class="page-actions">
+    <button class="btn btn-primary" hx-get="/api/programs" hx-target="#programs-table" hx-swap="innerHTML">
+        Refresh
+    </button>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Filters -->
+<div class="card">
+    <div class="filter-bar">
+        <select id="platform-filter" class="form-select">
+            <option value="">All Platforms</option>
+            <option value="hackerone">HackerOne</option>
+            <option value="bugcrowd">Bugcrowd</option>
+            <option value="intigriti">Intigriti</option>
+            <option value="yeswehack">YesWeHack</option>
+        </select>
+        <select id="status-filter" class="form-select">
+            <option value="">All Status</option>
+            <option value="true">Active Only</option>
+            <option value="false">Inactive Only</option>
+        </select>
+    </div>
+</div>
+
+<!-- Programs Table -->
+<div class="card">
+    <div id="programs-table">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Program Name</th>
+                    <th>Platform</th>
+                    <th>Status</th>
+                    <th>Assets</th>
+                    <th>Vulnerabilities</th>
+                    <th>Critical</th>
+                    <th>Last Updated</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for program in programs %}
+                <tr>
+                    <td>
+                        <strong>{{ program.name }}</strong>
+                        {% if program.url %}
+                        <br><small><a href="{{ program.url }}" target="_blank">{{ program.url }}</a></small>
+                        {% endif %}
+                    </td>
+                    <td><span class="badge badge-{{ program.platform }}">{{ program.platform }}</span></td>
+                    <td>
+                        {% if program.is_active %}
+                        <span class="status-badge active">Active</span>
+                        {% else %}
+                        <span class="status-badge inactive">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ program.asset_count or 0 }}</td>
+                    <td>{{ program.vuln_count or 0 }}</td>
+                    <td>
+                        {% if program.critical_vuln_count and program.critical_vuln_count > 0 %}
+                        <span class="severity-badge critical">{{ program.critical_vuln_count }}</span>
+                        {% else %}
+                        <span class="text-muted">0</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ program.updated_at.strftime('%Y-%m-%d %H:%M') if program.updated_at else 'N/A' }}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-icon" title="View Details" onclick="window.location.href='/programs/{{ program.id }}'">
+                                👁️
+                            </button>
+                            <button class="btn-icon" title="Scan Program" 
+                                    hx-post="/api/scans" 
+                                    hx-vals='{"program_id": {{ program.id }}, "scan_type": "RECON_FULL"}'
+                                    hx-swap="none">
+                                🔍
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        {% if not programs %}
+        <div class="empty-state">
+            <p>No programs found. Add your first bug bounty program to get started!</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

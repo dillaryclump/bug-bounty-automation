@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block page_actions %}
+<div class="page-actions">
+    <button class="btn btn-primary" hx-get="/api/scans" hx-target="#scans-table" hx-swap="innerHTML">
+        Refresh
+    </button>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Scan Statistics -->
+<div class="stats-grid small">
+    <div class="stat-card">
+        <h3>{{ total_scans }}</h3>
+        <p>Total Scans</p>
+    </div>
+    <div class="stat-card success">
+        <h3>{{ completed_scans }}</h3>
+        <p>Completed</p>
+    </div>
+    <div class="stat-card warning">
+        <h3>{{ running_scans }}</h3>
+        <p>Running</p>
+    </div>
+    <div class="stat-card danger">
+        <h3>{{ failed_scans }}</h3>
+        <p>Failed</p>
+    </div>
+</div>
+
+<!-- Scans Table -->
+<div class="card">
+    <div id="scans-table" hx-get="/api/scans" hx-trigger="every 10s" hx-swap="innerHTML">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Scan Type</th>
+                    <th>Program</th>
+                    <th>Status</th>
+                    <th>Started</th>
+                    <th>Completed</th>
+                    <th>Duration</th>
+                    <th>Results</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for scan in scans %}
+                <tr>
+                    <td><span class="badge badge-{{ scan.scan_type }}">{{ scan.scan_type }}</span></td>
+                    <td>{{ scan.program_name }}</td>
+                    <td>
+                        {% if scan.status == 'COMPLETED' %}
+                        <span class="status-badge success">Completed</span>
+                        {% elif scan.status == 'RUNNING' %}
+                        <span class="status-badge active">Running</span>
+                        {% elif scan.status == 'FAILED' %}
+                        <span class="status-badge error">Failed</span>
+                        {% elif scan.status == 'PENDING' %}
+                        <span class="status-badge pending">Pending</span>
+                        {% else %}
+                        <span class="status-badge">{{ scan.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ scan.started_at.strftime('%Y-%m-%d %H:%M:%S') if scan.started_at else 'Not started' }}</td>
+                    <td>{{ scan.completed_at.strftime('%Y-%m-%d %H:%M:%S') if scan.completed_at else '-' }}</td>
+                    <td>
+                        {% if scan.started_at and scan.completed_at %}
+                        {{ ((scan.completed_at - scan.started_at).seconds / 60)|round(1) }} min
+                        {% elif scan.started_at %}
+                        <span class="text-muted">In progress...</span>
+                        {% else %}
+                        <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if scan.result_summary %}
+                        <small>{{ scan.result_summary }}</small>
+                        {% else %}
+                        <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        {% if not scans %}
+        <div class="empty-state">
+            <p>No scans found. Trigger a scan from the Programs page!</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

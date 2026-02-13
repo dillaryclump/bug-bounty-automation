@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Stats Overview -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div class="stat-content">
+            <h3>{{ stats.total_programs }}</h3>
+            <p>Total Programs</p>
+            <span class="stat-badge">{{ stats.active_programs }} Active</span>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">🎯</div>
+        <div class="stat-content">
+            <h3>{{ stats.alive_assets }}</h3>
+            <p>Live Assets</p>
+            <span class="stat-badge success">{{ stats.in_scope_assets }} In Scope</span>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">🐛</div>
+        <div class="stat-content">
+            <h3>{{ stats.total_vulnerabilities }}</h3>
+            <p>Vulnerabilities</p>
+            <span class="stat-badge warning">{{ stats.unreported_count }} Unreported</span>
+        </div>
+    </div>
+    
+    <div class="stat-card critical">
+        <div class="stat-icon">🚨</div>
+        <div class="stat-content">
+            <h3>{{ stats.critical_count }}</h3>
+            <p>Critical Findings</p>
+            <span class="stat-badge danger">{{ stats.high_count }} High</span>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="section-grid">
+    <!-- Vulnerabilities by Severity -->
+    <div class="card">
+        <h3>Vulnerabilities by Severity</h3>
+        <div class="severity-breakdown">
+            <div class="severity-item critical">
+                <span class="severity-label">Critical</span>
+                <span class="severity-count">{{ stats.critical_count }}</span>
+                <div class="severity-bar" style="width: {% if stats.total_vulnerabilities > 0 %}{{ (stats.critical_count / stats.total_vulnerabilities * 100)|round }}{% else %}0{% endif %}%"></div>
+            </div>
+            <div class="severity-item high">
+                <span class="severity-label">High</span>
+                <span class="severity-count">{{ stats.high_count }}</span>
+                <div class="severity-bar" style="width: {% if stats.total_vulnerabilities > 0 %}{{ (stats.high_count / stats.total_vulnerabilities * 100)|round }}{% else %}0{% endif %}%"></div>
+            </div>
+            <div class="severity-item medium">
+                <span class="severity-label">Medium</span>
+                <span class="severity-count">{{ stats.medium_count }}</span>
+                <div class="severity-bar" style="width: {% if stats.total_vulnerabilities > 0 %}{{ (stats.medium_count / stats.total_vulnerabilities * 100)|round }}{% else %}0{% endif %}%"></div>
+            </div>
+            <div class="severity-item low">
+                <span class="severity-label">Low</span>
+                <span class="severity-count">{{ stats.low_count }}</span>
+                <div class="severity-bar" style="width: {% if stats.total_vulnerabilities > 0 %}{{ (stats.low_count / stats.total_vulnerabilities * 100)|round }}{% else %}0{% endif %}%"></div>
+            </div>
+            <div class="severity-item info">
+                <span class="severity-label">Info</span>
+                <span class="severity-count">{{ stats.info_count }}</span>
+                <div class="severity-bar" style="width: {% if stats.total_vulnerabilities > 0 %}{{ (stats.info_count / stats.total_vulnerabilities * 100)|round }}{% else %}0{% endif %}%"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Activity -->
+    <div class="card">
+        <h3>Recent Activity (24h)</h3>
+        <ul class="activity-list">
+            <li>
+                <span class="activity-icon">🆕</span>
+                <span class="activity-text"><strong>{{ stats.new_assets_24h }}</strong> new assets discovered</span>
+            </li>
+            <li>
+                <span class="activity-icon">🐛</span>
+                <span class="activity-text"><strong>{{ stats.new_vulnerabilities_24h }}</strong> new vulnerabilities found</span>
+            </li>
+            <li>
+                <span class="activity-icon">🔍</span>
+                <span class="activity-text"><strong>{{ stats.scans_24h }}</strong> scans completed</span>
+            </li>
+            <li>
+                <span class="activity-icon">📢</span>
+                <span class="activity-text"><strong>{{ stats.alerts_sent_24h }}</strong> alerts sent</span>
+            </li>
+            <li>
+                <span class="activity-icon">🎯</span>
+                <span class="activity-text"><strong>{{ stats.scope_changes_24h }}</strong> scope changes detected</span>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card">
+    <h3>Quick Actions</h3>
+    <div class="action-buttons">
+        <a href="/programs" class="btn btn-primary">View Programs</a>
+        <a href="/vulnerabilities?new_only=true" class="btn btn-warning">New Vulnerabilities</a>
+        <a href="/scans" class="btn btn-info">View Scans</a>
+        <a href="/api/docs" target="_blank" class="btn btn-secondary">API Documentation</a>
+    </div>
+</div>
+
+<!-- System Status -->
+<div class="card">
+    <h3>System Status</h3>
+    <div class="status-grid">
+        <div class="status-item">
+            <span class="status-label">Running Scans</span>
+            <span class="status-value {% if stats.running_scans > 0 %}status-active{% else %}status-idle{% endif %}">
+                {{ stats.running_scans }}
+            </span>
+        </div>
+        <div class="status-item">
+            <span class="status-label">Failed Alerts</span>
+            <span class="status-value {% if stats.failed_alerts > 0 %}status-error{% else %}status-ok{% endif %}">
+                {{ stats.failed_alerts }}
+            </span>
+        </div>
+        <div class="status-item">
+            <span class="status-label">Last Scan</span>
+            <span class="status-value status-info">
+                {% if stats.last_scan %}{{ stats.last_scan.strftime('%Y-%m-%d %H:%M') }}{% else %}Never{% endif %}
+            </span>
+        </div>
+        <div class="status-item">
+            <span class="status-label">Last Vulnerability</span>
+            <span class="status-value status-info">
+                {% if stats.last_vulnerability %}{{ stats.last_vulnerability.strftime('%Y-%m-%d %H:%M') }}{% else %}Never{% endif %}
+            </span>
+        </div>
+    </div>
+</div>
+
+<!-- Auto-refresh with HTMX -->
+<div hx-get="/api/stats/dashboard" 
+     hx-trigger="every 30s" 
+     hx-swap="none"
+     style="display: none;">
+</div>
+{% endblock %}

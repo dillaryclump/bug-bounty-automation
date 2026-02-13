@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block page_actions %}
+<div class="page-actions">
+    <button class="btn btn-primary" hx-get="/api/assets" hx-target="#assets-table" hx-swap="innerHTML">
+        Refresh
+    </button>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Filters -->
+<div class="card">
+    <div class="filter-bar">
+        <select id="type-filter" class="form-select">
+            <option value="">All Types</option>
+            <option value="domain">Domains</option>
+            <option value="subdomain">Subdomains</option>
+            <option value="url">URLs</option>
+            <option value="ip">IP Addresses</option>
+        </select>
+        <label class="checkbox-label">
+            <input type="checkbox" id="alive-only-filter" checked> Alive Only
+        </label>
+        <label class="checkbox-label">
+            <input type="checkbox" id="inscope-only-filter" checked> In Scope Only
+        </label>
+        <label class="checkbox-label">
+            <input type="checkbox" id="has-vulns-filter"> Has Vulnerabilities
+        </label>
+    </div>
+</div>
+
+<!-- Assets Table -->
+<div class="card">
+    <div id="assets-table">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Asset</th>
+                    <th>Type</th>
+                    <th>Program</th>
+                    <th>Status</th>
+                    <th>Scope</th>
+                    <th>Vulnerabilities</th>
+                    <th>HTTP Status</th>
+                    <th>Tech Stack</th>
+                    <th>Discovered</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for asset in assets %}
+                <tr>
+                    <td><code>{{ asset.value }}</code></td>
+                    <td><span class="badge badge-{{ asset.asset_type }}">{{ asset.asset_type }}</span></td>
+                    <td>{{ asset.program_name }}</td>
+                    <td>
+                        {% if asset.is_alive %}
+                        <span class="status-badge active">Alive</span>
+                        {% else %}
+                        <span class="status-badge inactive">Dead</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if asset.in_scope %}
+                        <span class="status-badge inscope">In Scope</span>
+                        {% else %}
+                        <span class="status-badge outofscope">Out of Scope</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if asset.vuln_count and asset.vuln_count > 0 %}
+                        <span class="badge badge-warning">{{ asset.vuln_count }}</span>
+                        {% if asset.critical_vuln_count and asset.critical_vuln_count > 0 %}
+                        <span class="severity-badge critical">{{ asset.critical_vuln_count }}</span>
+                        {% endif %}
+                        {% else %}
+                        <span class="text-muted">0</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if asset.http_status_code %}
+                        <span class="badge {% if asset.http_status_code < 400 %}badge-success{% else %}badge-error{% endif %}">
+                            {{ asset.http_status_code }}
+                        </span>
+                        {% else %}
+                        <span class="text-muted">N/A</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if asset.technologies %}
+                        <small>{{ asset.technologies|join(', ') }}</small>
+                        {% else %}
+                        <span class="text-muted">Unknown</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ asset.discovered_at.strftime('%Y-%m-%d') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        {% if not assets %}
+        <div class="empty-state">
+            <p>No assets found. Run a reconnaissance scan to discover assets!</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
